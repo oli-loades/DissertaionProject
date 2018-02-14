@@ -22,7 +22,7 @@ import org.eclipse.jgit.revwalk.filter.RevFilter;
 
 /**
  *
- * @author Oliver Loades
+ * @author Oli Loades
  */
 public class GitHandler {
 
@@ -129,7 +129,7 @@ public class GitHandler {
                 if (current.getParentCount() >= 2) {
                     MergeStat newMerge = new MergeStat(current.getName(), current.getAuthorIdent().getWhen());
                     for (int i = 1; i < current.getParentCount(); i++) {
-                        newMerge.addParent(current.getParent(i).getName());
+                        newMerge.addSource(current.getParent(i).getName());
                     }
                     branch.addMerge(newMerge);
                 }

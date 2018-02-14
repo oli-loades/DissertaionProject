@@ -8,31 +8,33 @@ package project;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.eclipse.jgit.lib.ObjectId;
 
 /**
  *
- * @author WinPC01
+ * @author Oli Loades
  */
-public class MergeStat extends CommitStat{
+public class MergeStat extends CommitStat {
 
-   
     private List<String> sources;
 
     MergeStat(String name, Date date) {
-        super(name,date);
+        super(name, date);
         sources = new ArrayList<>();
     }
 
-    public String getParent(int index) {
+    public String getSource(int index) {
         return sources.get(index);
     }
 
-    public void addParent(String parent) {
+    public void addSource(String parent) {
         sources.add(parent);
     }
-
-    public int getNumParent() {
+    
+    public void setSourceList(List<String> newSourceList){
+        sources = newSourceList;
+    }
+    
+    public int getNumSources() {
         return sources.size();
     }
 }

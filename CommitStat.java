@@ -5,54 +5,36 @@
  */
 package project;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import org.eclipse.jgit.lib.ObjectId;
 
 /**
  *
- * @author WinPC01
+ * @author Oli Loades
  */
 public class CommitStat {
+
     private String name;
     private Date date;
 
-    //date
-    //parents
-    CommitStat(String name,Date date){
+    CommitStat(String name, Date date) {
         this.name = name;
         this.date = date;
-
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the date
-     */
     public Date getDate() {
         return date;
     }
 
-    /**
-     * @param date the date to set
-     */
     public void setDate(Date date) {
         this.date = date;
     }
-    
 
 }

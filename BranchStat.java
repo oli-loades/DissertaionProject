@@ -10,14 +10,14 @@ import java.util.List;
 
 /**
  *
- * @author WinPC01
+ * @author Oli Loades
  */
 public class BranchStat {
 
     private String branchName;
     private String pathName;
-    private final List<MergeStat> merges;
-    private final List<CommitStat> commits;
+    private List<MergeStat> merges;
+    private List<CommitStat> commits;
 
     BranchStat(String branchName, String pathName) {
         this.branchName = branchName;
@@ -41,6 +41,18 @@ public class BranchStat {
     public MergeStat getMerge(int index) {
         return merges.get(index);
     }
+    
+    public List<MergeStat> getMergeList(){
+        return merges;
+    }
+    
+    public void setMergeList(List<MergeStat> newMergeList){
+        merges = newMergeList;
+    }
+    
+    public int getNumMerges(){
+        return merges.size();
+    }
 
     public void addCommit(CommitStat newCommit) {
         commits.add(newCommit);
@@ -50,11 +62,8 @@ public class BranchStat {
         return commits.get(index);
     }
 
-    public void setCommitList(List<CommitStat> newCommitsList) {
-        commits.clear();
-        for (CommitStat commit : newCommitsList) {
-            commits.add(commit);
-        }
+    public void setCommitList(List<CommitStat> newCommitList) {
+        commits = newCommitList;
     }
 
     public List<CommitStat> getCommitList() {
