@@ -28,7 +28,7 @@ public class GitHandler {
 
     private Git git;
 
-    GitHandler(String URL) {
+    public GitHandler(String URL) {
         try {
             git = cloneRepo(URL);
         } catch (IOException | GitAPIException ex) {

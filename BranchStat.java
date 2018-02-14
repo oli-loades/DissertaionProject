@@ -19,7 +19,7 @@ public class BranchStat {
     private List<MergeStat> merges;
     private List<CommitStat> commits;
 
-    BranchStat(String branchName, String pathName) {
+    public BranchStat(String branchName, String pathName) {
         this.branchName = branchName;
         this.pathName = pathName;
         merges = new ArrayList<>();
@@ -41,16 +41,16 @@ public class BranchStat {
     public MergeStat getMerge(int index) {
         return merges.get(index);
     }
-    
-    public List<MergeStat> getMergeList(){
+
+    public List<MergeStat> getMergeList() {
         return merges;
     }
-    
-    public void setMergeList(List<MergeStat> newMergeList){
+
+    public void setMergeList(List<MergeStat> newMergeList) {
         merges = newMergeList;
     }
-    
-    public int getNumMerges(){
+
+    public int getNumMerges() {
         return merges.size();
     }
 

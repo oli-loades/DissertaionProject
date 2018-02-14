@@ -18,7 +18,7 @@ public class Model {
     private List<BranchStat> branches;
     private final GitHandler gitHandler;
 
-    Model(String URL) {
+    public Model(String URL) {
         branches = new ArrayList<>();
         gitHandler = new GitHandler(URL);
         setUp();

@@ -17,7 +17,7 @@ public class MergeStat extends CommitStat {
 
     private List<String> sources;
 
-    MergeStat(String name, Date date) {
+    public MergeStat(String name, Date date) {
         super(name, date);
         sources = new ArrayList<>();
     }

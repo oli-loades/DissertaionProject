@@ -16,7 +16,7 @@ public class CommitStat {
     private String name;
     private Date date;
 
-    CommitStat(String name, Date date) {
+    public CommitStat(String name, Date date) {
         this.name = name;
         this.date = date;
     }
