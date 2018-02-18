@@ -5,7 +5,9 @@
  */
 package project;
 
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 
 /**
  *
@@ -14,15 +16,13 @@ import javafx.scene.shape.Circle;
 public class CommitNode extends Circle {
 
     private String name;
+    private String branch;
 
-    public CommitNode(String n, double r, int x, int y) {
-        super(r, x, y);
+    
+    public CommitNode(String n, String b){
+        super(5);
         name = n;
-    }
-
-    public CommitNode(String n, int x, int y) {
-        super(10, x, y);
-        name = n;
+        branch = b;
     }
 
     public String getName() {
