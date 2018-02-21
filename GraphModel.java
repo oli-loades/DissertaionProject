@@ -8,6 +8,7 @@ package project;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
 
 /**
  *
@@ -30,47 +31,49 @@ public class GraphModel {
 
     private void populateLists() {
         populateNodeList();
-        System.out.println(nodeList.size());
         populateCommitList();
         populateMergeList();
     }
 
     private void populateNodeList() {
-        for (BranchStat branch : model.getBranchList()) {
-            for (CommitStat commit : branch.getCommitList()) {     
+        for (BranchStat branch : getModel().getBranchList()) {
+            for (CommitStat commit : branch.getCommitList()) {
                 if (!containsNode(commit.getName())) {
-                    CommitNode newNode = new CommitNode(commit.getName(),branch.getBranchName());
+                    CommitNode newNode = new CommitNode(commit, branch.getBranchName());
                     nodeList.add(newNode);
                 }
             }
         }
     }
 
-    private void populateMergeList() {
-        for (BranchStat branch : model.getBranchList()) {
+    public void populateMergeList() {
+        for (BranchStat branch : getModel().getBranchList()) {
             for (MergeStat merge : branch.getMergeList()) {
                 for (int i = 0; i < merge.getNumSources(); i++) {
                     CommitNode target = findNode(merge.getName());
                     CommitNode source = findNode(merge.getSource(i));
                     if (source != null && target != null) {
-                        MergeEdge edge = new MergeEdge(findNode(merge.getName()), findNode(merge.getSource(i)));
-                        if (!mergeEdgeList.contains(edge)) {
+                        if (!containsMergeEdge(source.getCommit().getName(), target.getCommit().getName())) {
+                            MergeEdge edge = new MergeEdge(source, target);
                             mergeEdgeList.add(edge);
                         }
                     }
                 }
-
             }
         }
     }
 
-    private void populateCommitList() {
-        for (BranchStat branch : model.getBranchList()) {
+    public void populateCommitList() {
+        for (BranchStat branch : getModel().getBranchList()) {
             int j = 0;
             for (int i = 1; i < branch.getCommitList().size(); i++) {
-                Edge edge = new Edge(getNodeList().get(j), getNodeList().get(i));;
-                if (!commitEdgeList.contains(edge)) {
-                    commitEdgeList.add(edge);
+                CommitNode target = findNode(branch.getCommit(i).getName());
+                CommitNode source = findNode(branch.getCommit(j).getName());
+                if (source != null && target != null) {
+                    if (!containsCommitEdge(source.getCommit().getName(), target.getCommit().getName())) {
+                        Edge edge = new Edge(source, target);
+                        commitEdgeList.add(edge);
+                    }
                 }
                 j++;
             }
@@ -79,22 +82,11 @@ public class GraphModel {
 
     private CommitNode findNode(String name) {
         for (CommitNode node : getNodeList()) {
-            if (node.getName().equals(name)) {
+            if (node.getCommit().getName().equals(name)) {
                 return node;
             }
         }
         return null;
-    }
-
-    private double calcX(Date commitDate) {
-        int x = commitDate.compareTo(model.getEarliestDate());
-        double dx;
-        if (x == 0) {
-            dx = 100;
-        } else {
-            dx = x * 100;
-        }
-        return dx;
     }
 
     public List<CommitNode> getNodeList() {
@@ -120,26 +112,79 @@ public class GraphModel {
     public void setMergeEdgeList(List<MergeEdge> mergeEdgeList) {
         this.mergeEdgeList = mergeEdgeList;
     }
-    
-    public CommitNode getNode(int index){
+
+    public CommitNode getNode(int index) {
         return nodeList.get(index);
     }
-    
-    public MergeEdge getMergeEdge(int index){
+
+    public MergeEdge getMergeEdge(int index) {
         return mergeEdgeList.get(index);
     }
-    
-    public Edge getCmmitEdge(int index){
+
+    public Edge getCmmitEdge(int index) {
         return commitEdgeList.get(index);
     }
-    
-    private boolean containsNode(String name){
+
+    public void printNodeList() {
+        for (CommitNode node : nodeList) {
+            System.out.println(node.getCommit().getName() + " - " + node.getBranch());
+            System.out.println(node.getLayoutX() + ", " + node.getLayoutY());
+        }
+    }
+
+    public void printEdgeList() {
+        for (Edge e : commitEdgeList) {
+            System.out.println(e.getSource().getCommit().getName());
+            System.out.println(e.getTarget().getCommit().getName());
+            System.out.println("");
+        }
+    }
+
+    private boolean containsNode(String name) {
         boolean found = false;
-        for(CommitNode node : nodeList){
-            if(node.getName().equals(name)){
+        for (CommitNode node : nodeList) {
+            if (node.getCommit().getName().equals(name)) {
                 found = true;
             }
         }
         return found;
+    }
+
+    private boolean containsCommitEdge(String sourceName, String targetName) {
+        boolean found = false;
+        for (Edge commitEdge : commitEdgeList) {
+            if (commitEdge.getSource().getCommit().getName().equals(sourceName)) {
+                if (commitEdge.getTarget().getCommit().getName().equals(targetName)) {
+                    found = true;
+                }
+            }
+        }
+        return found;
+    }
+
+    private boolean containsMergeEdge(String sourceName, String targetName) {
+        boolean found = false;
+        for (MergeEdge mergeEdge : mergeEdgeList) {
+            if (mergeEdge.getSource().getCommit().getName().equals(sourceName)) {
+                if (mergeEdge.getTarget().getCommit().getName().equals(targetName)) {
+                    found = true;
+                }
+            }
+        }
+        return found;
+    }
+
+    /**
+     * @return the model
+     */
+    public Model getModel() {
+        return model;
+    }
+
+    /**
+     * @param model the model to set
+     */
+    public void setModel(Model model) {
+        this.model = model;
     }
 }

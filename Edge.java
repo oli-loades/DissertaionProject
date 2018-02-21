@@ -18,11 +18,8 @@ public class Edge extends Line {
 
     public Edge(CommitNode source, CommitNode target) {
         super();
-        reallocate();
-        setStartX(source.getLeftXConnectionPoint());
-        setStartY(source.getCenterY());
-        setStartX(target.getRightXConnectionPoint());
-        setStartY(target.getCenterY());
+        this.source=source;
+        this.target = target;
     }
 
     public CommitNode getSource() {
@@ -41,10 +38,10 @@ public class Edge extends Line {
         this.target = target;
     }
 
-    public void reallocate() {
-        setStartX(source.getLeftXConnectionPoint());
-        setStartY(source.getCenterY());
-        setStartX(target.getRightXConnectionPoint());
-        setStartY(target.getCenterY());
+    public void update() {
+         setEndX(target.getLayoutX());
+        setEndY(target.getLayoutY());
+        setStartX(source.getLayoutX());
+        setStartY(source.getLayoutY());   
     }
 }

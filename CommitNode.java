@@ -5,9 +5,8 @@
  */
 package project;
 
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
 
 /**
  *
@@ -15,30 +14,44 @@ import javafx.scene.shape.Shape;
  */
 public class CommitNode extends Circle {
 
-    private String name;
+    private CommitStat commit;
     private String branch;
+    private Tooltip toolTip;
 
-    
-    public CommitNode(String n, String b){
+    public CommitNode(CommitStat c, String b) {
         super(5);
-        name = n;
+        commit = c;
         branch = b;
+        toolTip = new Tooltip(commit.getName());
+        addToolTip();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getLeftXConnectionPoint() {
-        return getCenterX() - getRadius();
+    public double getLeftXConnectionPoint() {     
+        return getLayoutX() - getRadius();
     }
 
     public double getRightXConnectionPoint() {
-        return getCenterX() + getRadius();
+        return getLayoutX() + getRadius();
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public CommitStat getCommit() {
+        return commit;
+    }
+
+    public void setCommit(CommitStat commit) {
+        this.commit = commit;
+    }
+
+    private void addToolTip() {
+        Tooltip.install(this, toolTip);
     }
 
 }

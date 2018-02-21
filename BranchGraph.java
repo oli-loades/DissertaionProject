@@ -5,13 +5,9 @@
  */
 package project;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+
 
 /**
  *
@@ -20,16 +16,18 @@ import javafx.scene.control.ScrollPane;
 public class BranchGraph {
 
     private GraphModel graphModel;
-    private ZoomableScrollPane pane;
+    private ScrollPane pane;
     private Group canvas;
-    
+
     private LayoutManager layout;
 
     public BranchGraph(Model model) {
         graphModel = new GraphModel(model);
         canvas = new Group();
-        addCompoenets();      
-        pane = new ZoomableScrollPane(canvas);
+
+        layout = new LayoutManager(graphModel);
+        setUp();
+        graphModel.printEdgeList();
         pane.setPrefSize(900, 900);
         pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
     }
@@ -42,11 +40,11 @@ public class BranchGraph {
         this.graphModel = graphModel;
     }
 
-    public ZoomableScrollPane getPane() {
+    public ScrollPane getPane() {
         return pane;
     }
 
-    public void setPane(ZoomableScrollPane pane) {
+    public void setPane(ScrollPane pane) {
         this.pane = pane;
     }
 
@@ -59,9 +57,16 @@ public class BranchGraph {
     }
 
     private void addCompoenets() {
-      canvas.getChildren().addAll(graphModel.getNodeList());
-      canvas.getChildren().addAll(graphModel.getCommitEdgeList());
-      canvas.getChildren().addAll(graphModel.getMergeEdgeList());
+        canvas.getChildren().addAll(graphModel.getNodeList());
+        canvas.getChildren().addAll(graphModel.getCommitEdgeList());
+        canvas.getChildren().addAll(graphModel.getMergeEdgeList());
+    }
+
+    private void setUp() {
+        graphModel.populateCommitList();
+        graphModel.populateMergeList();
+        addCompoenets();
+        pane = new ScrollPane(canvas);
     }
 
 }

@@ -5,15 +5,16 @@
  */
 package project;
 
+
 /**
  *
  * @author Oli Loades
  */
 public class MergeEdge extends Edge {
-
+    
     public MergeEdge(CommitNode source, CommitNode target) {
         super(source, target);
         getStrokeDashArray().addAll(5.0, 10.0);
     }
-
+    
 }
