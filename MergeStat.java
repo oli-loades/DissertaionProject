@@ -5,8 +5,8 @@
  */
 package project;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +17,7 @@ public class MergeStat extends CommitStat {
 
     private List<String> sources;
 
-    public MergeStat(String name, Date date) {
+    public MergeStat(String name, LocalDate date) {
         super(name, date);
         sources = new ArrayList<>();
     }

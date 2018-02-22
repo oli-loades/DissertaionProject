@@ -5,7 +5,7 @@
  */
 package project;
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +34,14 @@ public class Model {
 
     public List<BranchStat> getBranchList() {
         return branches;
+    }
+
+    public LocalDate getEarliestDate() {
+        return branches.get(0).getCommit(0).getDate();
+    }
+
+    public int getNumBranches() {
+        return branches.size();
     }
 
 }

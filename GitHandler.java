@@ -8,8 +8,11 @@ package project;
 import org.eclipse.jgit.api.Git;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -127,7 +130,7 @@ public class GitHandler {
             RevCommit current = head;
             while (current.getParentCount() != 0) {
                 if (current.getParentCount() >= 2) {
-                    MergeStat newMerge = new MergeStat(current.getName(), current.getAuthorIdent().getWhen());
+                    MergeStat newMerge = new MergeStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
                     for (int i = 1; i < current.getParentCount(); i++) {
                         newMerge.addSource(current.getParent(i).getName());
                     }
@@ -153,17 +156,18 @@ public class GitHandler {
             CommitStat newCommit;
 
             while (current.getParentCount() != 0) {
-                newCommit = new CommitStat(current.getName(), current.getAuthorIdent().getWhen());
+                newCommit = new CommitStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
+                current.getAuthorIdent().getTimeZone();
                 commits.add(newCommit);
                 current = revWalk.parseCommit(current.getParent(0).getId());
             }
 
             if (current.getParentCount() == 0 && !commits.isEmpty()) {//root commit
-                newCommit = new CommitStat(current.getName(), current.getAuthorIdent().getWhen());
+                newCommit = new CommitStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
                 commits.add(newCommit);
                 Collections.reverse(commits);
             } else if (commits.isEmpty()) {//only commit
-                newCommit = new CommitStat(head.getName(), head.getAuthorIdent().getWhen());
+                newCommit = new CommitStat(head.getName(), convertDate(head.getAuthorIdent().getWhen()));
                 commits.add(newCommit);
             }
 
@@ -172,6 +176,10 @@ public class GitHandler {
             e.printStackTrace();
         }
         return branch;
+    }
+
+    private LocalDate convertDate(Date commitDate) {
+        return commitDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 }
