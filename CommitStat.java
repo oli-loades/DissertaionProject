@@ -5,7 +5,7 @@
  */
 package project;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  *
@@ -14,9 +14,9 @@ import java.util.Date;
 public class CommitStat {
 
     private String name;
-    private Date date;
+    private LocalDate date;
 
-    public CommitStat(String name, Date date) {
+    public CommitStat(String name, LocalDate date) {
         this.name = name;
         this.date = date;
     }
@@ -29,11 +29,11 @@ public class CommitStat {
         this.name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

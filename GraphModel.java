@@ -6,13 +6,12 @@
 package project;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Observable;
+import javafx.scene.paint.Color;
 
 /**
  *
- * @author WinPC01
+ * @author Oli Loades
  */
 public class GraphModel {
 
@@ -20,12 +19,14 @@ public class GraphModel {
     private List<CommitNode> nodeList;
     private List<Edge> commitEdgeList;
     private List<MergeEdge> mergeEdgeList;
+    private ColourManager colourManager;
 
     public GraphModel(Model model) {
         this.model = model;
         nodeList = new ArrayList<>();
         commitEdgeList = new ArrayList<>();
         mergeEdgeList = new ArrayList<>();
+        colourManager = new ColourManager(model.getNumBranches());
         populateLists();
     }
 
@@ -37,9 +38,10 @@ public class GraphModel {
 
     private void populateNodeList() {
         for (BranchStat branch : getModel().getBranchList()) {
+            Color colour = colourManager.getNextColour();
             for (CommitStat commit : branch.getCommitList()) {
                 if (!containsNode(commit.getName())) {
-                    CommitNode newNode = new CommitNode(commit, branch.getBranchName());
+                    CommitNode newNode = new CommitNode(commit, branch.getBranchName(), colour);
                     nodeList.add(newNode);
                 }
             }
@@ -125,21 +127,6 @@ public class GraphModel {
         return commitEdgeList.get(index);
     }
 
-    public void printNodeList() {
-        for (CommitNode node : nodeList) {
-            System.out.println(node.getCommit().getName() + " - " + node.getBranch());
-            System.out.println(node.getLayoutX() + ", " + node.getLayoutY());
-        }
-    }
-
-    public void printEdgeList() {
-        for (Edge e : commitEdgeList) {
-            System.out.println(e.getSource().getCommit().getName());
-            System.out.println(e.getTarget().getCommit().getName());
-            System.out.println("");
-        }
-    }
-
     private boolean containsNode(String name) {
         boolean found = false;
         for (CommitNode node : nodeList) {
@@ -174,16 +161,10 @@ public class GraphModel {
         return found;
     }
 
-    /**
-     * @return the model
-     */
     public Model getModel() {
         return model;
     }
 
-    /**
-     * @param model the model to set
-     */
     public void setModel(Model model) {
         this.model = model;
     }

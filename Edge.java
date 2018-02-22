@@ -18,8 +18,9 @@ public class Edge extends Line {
 
     public Edge(CommitNode source, CommitNode target) {
         super();
-        this.source=source;
+        this.source = source;
         this.target = target;
+        setStroke(target.getFill());
     }
 
     public CommitNode getSource() {
@@ -39,9 +40,9 @@ public class Edge extends Line {
     }
 
     public void update() {
-         setEndX(target.getLayoutX());
+        setEndX(target.getLayoutX());
         setEndY(target.getLayoutY());
         setStartX(source.getLayoutX());
-        setStartY(source.getLayoutY());   
+        setStartY(source.getLayoutY());
     }
 }

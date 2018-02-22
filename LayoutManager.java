@@ -7,11 +7,10 @@ package project;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  *
- * @author WinPC01
+ * @author Oli Loades
  */
 public class LayoutManager {
 
@@ -71,7 +70,6 @@ public class LayoutManager {
         for (Edge commitEdge : graphModel.getCommitEdgeList()) {
             commitEdge.update();
         }
-
     }
 
     private void connectMerges() {
