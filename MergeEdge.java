@@ -16,6 +16,7 @@ public class MergeEdge extends Edge {
         getStrokeDashArray().addAll(5.0, 10.0);
     }
 
+    @Override
     public void setColour() {
         setStroke(getSource().getFill());
     }

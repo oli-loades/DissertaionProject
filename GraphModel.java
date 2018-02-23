@@ -168,4 +168,8 @@ public class GraphModel {
     public void setModel(Model model) {
         this.model = model;
     }
+
+    public double getNodeRadius() {
+        return nodeList.get(0).getRadius();
+    }
 }

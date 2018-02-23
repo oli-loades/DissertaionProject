@@ -6,6 +6,7 @@
 package project;
 
 import javafx.scene.Group;
+import javafx.scene.control.ScrollPane;
 
 /**
  *
@@ -14,21 +15,22 @@ import javafx.scene.Group;
 public class BranchGraph {
 
     private GraphModel graphModel;
-    private ZoomableScrollPane pane;
+    private ScrollPane pane;
     private Group canvas;
+    private final double HEIGHT;
+    private final double WIDTH;
 
     private LayoutManager layout;
 
-    public BranchGraph(Model model) {
+    public BranchGraph(Model model, double w, double h) {
         graphModel = new GraphModel(model);
         canvas = new Group();
-
-        layout = new LayoutManager(graphModel);
+        HEIGHT = h;
+        WIDTH = w;
+        
+        layout = new LayoutManager(graphModel,HEIGHT);
 
         setUp();
-        
-        pane.setPrefSize(900, 900);
-        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
     }
 
     public GraphModel getGraphModel() {
@@ -39,11 +41,11 @@ public class BranchGraph {
         this.graphModel = graphModel;
     }
 
-    public ZoomableScrollPane getZPane() {
+    public ScrollPane getPane() {
         return pane;
     }
 
-    public void setPane(ZoomableScrollPane pane) {
+    public void setPane(ScrollPane pane) {
         this.pane = pane;
     }
 
@@ -68,7 +70,10 @@ public class BranchGraph {
         graphModel.populateCommitList();
         graphModel.populateMergeList();
         addCompoenets();
-        pane = new ZoomableScrollPane(canvas);
+
+        pane = new ScrollPane(canvas);
+                pane.setPrefSize(HEIGHT, WIDTH);
+        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
     }
 
 }

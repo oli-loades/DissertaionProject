@@ -7,6 +7,9 @@ package project;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -15,9 +18,17 @@ import java.time.LocalDate;
 public class LayoutManager {
 
     private GraphModel graphModel;
+    private final int HGAP = 100;
+    private final double NODE_WIDTH;
+    private List<Layer> layerList;
+    private final double SIZE;
 
-    public LayoutManager(GraphModel g) {
+    public LayoutManager(GraphModel g, double size) {
         graphModel = g;
+        NODE_WIDTH = graphModel.getNodeRadius() * 2;
+        layerList = new ArrayList<>();
+        SIZE = size;
+        createLayerList();
         setUp();
     }
 
@@ -32,38 +43,75 @@ public class LayoutManager {
     }
 
     private void moveNodes() {
-        double x = 0;
-        double y = 500;
+        double x;
+        double y = SIZE / 2;
         double aboveY = y;
         double belowY = y;
         boolean aboveMaster = false;
-        LocalDate prevCommitDate = null;
+        boolean branchChange;
 
         String currentBranch = graphModel.getNode(0).getBranch();
 
         for (CommitNode node : graphModel.getNodeList()) {
             if (!currentBranch.equals(node.getBranch())) {
+                branchChange = true;
                 if (aboveMaster) {
-                    aboveY = aboveY + 100;
+                    aboveY = aboveY + HGAP;
                     y = aboveY;
                 } else {
-                    belowY = belowY - 100;
+                    belowY = belowY - HGAP;
                     y = belowY;
                 }
                 aboveMaster = !aboveMaster;
                 currentBranch = node.getBranch();
-            }
-
-            if (prevCommitDate != null && node.getCommit().getDate().isEqual(prevCommitDate)) {
-                x = x + 10;
             } else {
-                x = calcX(node.getCommit().getDate());
+                branchChange = false;
             }
-
-            prevCommitDate = node.getCommit().getDate();
+            x = calcX(node.getCommit().getDate(), branchChange);
 
             node.relocate(x, y);
         }
+    }
+
+    private void createLayerList() {
+        Layer prevLayer = null;
+        double start = 0;
+        int numNodes;
+        for (LocalDate date : sortNodeList()) {
+
+            if (!containsLayer(date)) {
+                if (prevLayer != null) {
+                    Duration duration = Duration.between(prevLayer.getDate().atStartOfDay(), date.atStartOfDay());
+                    long x = Math.abs(duration.toDays());
+                    start = prevLayer.getEndX() + (NODE_WIDTH * x);
+                }
+
+                numNodes = getNumNodesInLayer(date);
+                Layer layer = new Layer(date, NODE_WIDTH, start, numNodes);
+                layerList.add(layer);
+                prevLayer = layer;
+            }
+        }
+    }
+
+    private List<LocalDate> sortNodeList() {
+        List<LocalDate> nodesSortedByDate = new ArrayList<>();
+        for (CommitNode node : graphModel.getNodeList()) {
+            nodesSortedByDate.add(node.getCommit().getDate());
+        }
+        Collections.sort(nodesSortedByDate);
+
+        return nodesSortedByDate;
+    }
+
+    private int getNumNodesInLayer(LocalDate date) {
+        int numNodes = 0;
+        for (LocalDate nodeDate : sortNodeList()) {
+            if (nodeDate.isEqual(date)) {
+                numNodes++;
+            }
+        }
+        return numNodes;
     }
 
     private void connectCommits() {
@@ -78,16 +126,32 @@ public class LayoutManager {
         }
     }
 
-    private double calcX(LocalDate commitDate) {
-        LocalDate start = graphModel.getModel().getEarliestDate();
-        Duration duration = Duration.between(start.atStartOfDay(), commitDate.atStartOfDay());
-        long x = Math.abs(duration.toDays());
-        double dx;
-        if (x == 0) {
-            dx = 20;
-        } else {
-            dx = x * 30;
+    private double calcX(LocalDate commitDate, boolean branchChange) {
+        Layer layer = getLayer(commitDate);
+        if (branchChange) {
+            layer.resetCurrentX();
         }
-        return dx;
+        return layer.nextX();
+
+    }
+
+    private boolean containsLayer(LocalDate date) {
+        boolean contains = false;
+        for (Layer layer : layerList) {
+            if (layer.getDate().equals(date)) {
+                contains = true;
+            }
+        }
+        return contains;
+    }
+
+    private Layer getLayer(LocalDate date) {
+        Layer l = null;
+        for (Layer layer : layerList) {
+            if (layer.getDate().equals(date)) {
+                l = layer;
+            }
+        }
+        return l;
     }
 }

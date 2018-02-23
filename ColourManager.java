@@ -15,30 +15,31 @@ import javafx.scene.paint.Color;
  * @author Oli Loades
  */
 public class ColourManager {
+
     private final List<Color> colours;
     private ListIterator colourIter;
     private final int numColours;
-    private final double BRIGHTNESS = 1.0;
-    private final double SATURATION = 1.0;
+    private final double BRIGHTNESS = 0.9;
+    private final double SATURATION = 0.9;
     private final double UPPER = 360.0;
-    
-    public ColourManager(int numColours){
+
+    public ColourManager(int numColours) {
         this.numColours = numColours;
         colours = new ArrayList<>();
         generateColours();
-        colourIter = colours.listIterator();  
+        colourIter = colours.listIterator();
     }
-    
-    private void generateColours(){
+
+    private void generateColours() {
         double hue = 0;
         double gap = UPPER / (double) numColours;
-        for(int i = 0; i< numColours;i++){
-            hue = hue + gap;
+        for (int i = 0; i < numColours; i++) {
             colours.add(Color.hsb(hue, SATURATION, BRIGHTNESS));
+            hue = hue + gap;
         }
     }
-    
-    public Color getNextColour(){
+
+    public Color getNextColour() {
         return (Color) colourIter.next();
     }
 }
