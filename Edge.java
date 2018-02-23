@@ -20,6 +20,10 @@ public class Edge extends Line {
         super();
         this.source = source;
         this.target = target;
+        setColour();
+    }
+    
+    public void setColour(){
         setStroke(target.getFill());
     }
 
