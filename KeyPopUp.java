@@ -8,7 +8,9 @@ package project;
 import java.util.Iterator;
 import java.util.Map;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -28,7 +30,7 @@ public class KeyPopUp extends GridPane {
     private final double BRANCH_COMPONENT_HEIGHT = 20;
     private final double MAX_BRANCH_LABEL_WIDTH = 300;
     private final double MAX_BRANCH_COLOUR_WIDTH = 20;
-    private final double PREF_BUTTON_WIDTH = 300;
+    private final double PREF_BUTTON_WIDTH = 50;
     private Controller controller;
 
     public KeyPopUp(Model model, Controller controller) {
@@ -62,19 +64,29 @@ public class KeyPopUp extends GridPane {
 
             Label branchName = new Label(branchColourPair.getKey().toString());
             branchName.setPrefSize(MAX_BRANCH_LABEL_WIDTH, BRANCH_COMPONENT_HEIGHT);
-            GridPane.setMargin(branchName, new Insets(5, 5, 5, 5));
+
             add(branchName, row, col);
+
+            GridPane.setHalignment(branchName, HPos.LEFT);
+            GridPane.setValignment(OKButton, VPos.CENTER);
 
             row++;
 
             Rectangle branchColour = createRectangle((Color) branchColourPair.getValue());
-            GridPane.setMargin(branchColour, new Insets(5, 5, 5, 5));
 
             add(branchColour, row, col);
+
+            GridPane.setHalignment(branchColour, HPos.LEFT);
+            GridPane.setValignment(branchColour, VPos.CENTER);
+
             col++;
         }
-        GridPane.setMargin(OKButton, new Insets(10, 50, 10, 50));
+
         add(OKButton, 0, col);
+        
+        GridPane.setHalignment(OKButton, HPos.CENTER);
+        GridPane.setValignment(OKButton, VPos.CENTER);
+        this.setAlignment(Pos.CENTER);
     }
 
     private Rectangle createRectangle(Color colour) {

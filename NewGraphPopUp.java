@@ -6,6 +6,9 @@
 package project;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -32,7 +35,8 @@ public class NewGraphPopUp extends GridPane {
         OKButton = new Button("OK");
 
         CancelButton = new Button("Cancel");
-        fieldName = new Label("Repo Location");
+
+        fieldName = new Label("Repository Location");
         URLField = new TextField();
 
         setUp();
@@ -54,6 +58,13 @@ public class NewGraphPopUp extends GridPane {
         add(URLField, 1, 0);
         add(OKButton, 0, 1);
         add(CancelButton, 1, 1);
+        
+        GridPane.setHalignment(OKButton, HPos.CENTER);
+        GridPane.setValignment(OKButton, VPos.CENTER);
+        GridPane.setHalignment(CancelButton, HPos.CENTER); 
+        GridPane.setValignment(CancelButton, VPos.CENTER);
+        
+        this.setAlignment(Pos.CENTER);
     }
 
 }

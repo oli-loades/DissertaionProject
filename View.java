@@ -82,7 +82,7 @@ public class View extends Application implements Observer {
     public void createNewRepoPopUp() {
         NewGraphPopUp popUp = new NewGraphPopUp(controller);
         popUpStage = new Stage();
-        Scene secondaryScene = new Scene(popUp, 500, 500);
+        Scene secondaryScene = new Scene(popUp, 275, 75);
         popUpStage.setScene(secondaryScene);
         popUpStage.setResizable(false);
         popUpStage.show();

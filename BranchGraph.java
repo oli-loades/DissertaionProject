@@ -22,8 +22,6 @@ public class BranchGraph implements Observer {
     private final double HEIGHT;
     private final double WIDTH;
 
-    private LayoutManager layout;
-
     public BranchGraph(Model model, double w, double h) {
         this.model = model;
         HEIGHT = h;
@@ -41,7 +39,7 @@ public class BranchGraph implements Observer {
     }
 
     public void newLayout() {
-        layout = new LayoutManager(model.getGraphModel(), HEIGHT);
+        LayoutManager layout = new LayoutManager(model.getGraphModel(), HEIGHT);
     }
 
     public ScrollPane getPane() {
