@@ -8,24 +8,28 @@ package project;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 /**
  *
  * @author Oli Loades
  */
-public class Model {
+public class Model extends Observable {
 
     private List<BranchStat> branches;
-    private final GitHandler gitHandler;
+    private GitHandler gitHandler;
+    private GraphModel graphModel;
 
-    public Model(String URL) {
+    public Model() {
         branches = new ArrayList<>();
-        gitHandler = new GitHandler(URL);
-        setUp();
     }
 
-    private void setUp() {
+    public void newRepo(String url) {
+        gitHandler = new GitHandler(url);
         branches = gitHandler.createBranchStatList();
+        graphModel = new GraphModel(this);
+        setChanged();
+        notifyObservers();
     }
 
     public BranchStat getBranch(int index) {
@@ -42,6 +46,10 @@ public class Model {
 
     public int getNumBranches() {
         return branches.size();
+    }
+
+    public GraphModel getGraphModel() {
+        return graphModel;
     }
 
 }

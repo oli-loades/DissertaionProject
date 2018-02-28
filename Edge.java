@@ -5,6 +5,7 @@
  */
 package project;
 
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Line;
 
 /**
@@ -15,15 +16,18 @@ public class Edge extends Line {
 
     private CommitNode source;
     private CommitNode target;
+    private final double WIDTH = 3.0;
 
     public Edge(CommitNode source, CommitNode target) {
         super();
         this.source = source;
         this.target = target;
+        this.setStrokeWidth(WIDTH);
         setColour();
+        addTooltip();
     }
-    
-    public void setColour(){
+
+    public void setColour() {
         setStroke(target.getFill());
     }
 
@@ -48,5 +52,11 @@ public class Edge extends Line {
         setEndY(target.getLayoutY());
         setStartX(source.getLayoutX());
         setStartY(source.getLayoutY());
+    }
+
+    public void addTooltip() {
+        Tooltip tooltip = new Tooltip();
+        tooltip.setText(target.getBranch());
+        Tooltip.install(this, tooltip);
     }
 }

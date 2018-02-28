@@ -17,15 +17,14 @@ public class CommitNode extends Circle {
     
     private CommitStat commit;
     private String branch;
-    private final Tooltip toolTip;
+    private final static double RADIUS = 5;
     
     public CommitNode(CommitStat com, String b, Color col) {
-        super(5);
+        super(RADIUS);
         commit = com;
-        branch = b;
-        toolTip = new Tooltip();
+        branch = b;      
         setFill(col);
-        addToolTip();
+        addTooltip();
     }
     
     public double getLeftXConnectionPoint() {
@@ -60,9 +59,14 @@ public class CommitNode extends Circle {
         this.commit = commit;
     }
     
-    private void addToolTip() {        
-        toolTip.setText(commit.getName() + "\n" + commit.getDate().toString());
-        Tooltip.install(this, toolTip);
+    private void addTooltip() {  
+         Tooltip tooltip = new Tooltip();
+        tooltip.setText(branch + "\n" + commit.getName() + "\n" + commit.getDate().toString());
+        Tooltip.install(this, tooltip);
+    }
+    
+    public static double getNodeRadius(){
+        return RADIUS;
     }
     
 }

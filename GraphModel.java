@@ -6,7 +6,9 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.scene.paint.Color;
 
 /**
@@ -20,6 +22,7 @@ public class GraphModel {
     private List<Edge> commitEdgeList;
     private List<MergeEdge> mergeEdgeList;
     private ColourManager colourManager;
+    private Map<String, Color> branchColours;
 
     public GraphModel(Model model) {
         this.model = model;
@@ -27,6 +30,7 @@ public class GraphModel {
         commitEdgeList = new ArrayList<>();
         mergeEdgeList = new ArrayList<>();
         colourManager = new ColourManager(model.getNumBranches());
+        branchColours = new HashMap<>();
         populateLists();
     }
 
@@ -39,6 +43,7 @@ public class GraphModel {
     private void populateNodeList() {
         for (BranchStat branch : getModel().getBranchList()) {
             Color colour = colourManager.getNextColour();
+            getBranchColours().put(branch.getBranchName(), colour);
             for (CommitStat commit : branch.getCommitList()) {
                 if (!containsNode(commit.getName())) {
                     CommitNode newNode = new CommitNode(commit, branch.getBranchName(), colour);
@@ -170,6 +175,11 @@ public class GraphModel {
     }
 
     public double getNodeRadius() {
-        return nodeList.get(0).getRadius();
+        return CommitNode.getNodeRadius();
     }
+
+    public Map<String, Color> getBranchColours() {
+        return branchColours;
+    }
+
 }

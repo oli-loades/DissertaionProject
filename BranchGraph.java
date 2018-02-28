@@ -5,6 +5,8 @@
  */
 package project;
 
+import java.util.Observable;
+import java.util.Observer;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 
@@ -12,9 +14,9 @@ import javafx.scene.control.ScrollPane;
  *
  * @author Oli Loades
  */
-public class BranchGraph {
+public class BranchGraph implements Observer {
 
-    private GraphModel graphModel;
+    private Model model;
     private ScrollPane pane;
     private Group canvas;
     private final double HEIGHT;
@@ -23,22 +25,23 @@ public class BranchGraph {
     private LayoutManager layout;
 
     public BranchGraph(Model model, double w, double h) {
-        graphModel = new GraphModel(model);
-        canvas = new Group();
+        this.model = model;
         HEIGHT = h;
         WIDTH = w;
-        
-        layout = new LayoutManager(graphModel,HEIGHT);
+        pane = new ScrollPane();
+        pane.setPrefSize(HEIGHT, WIDTH);
+        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
 
-        setUp();
+        this.model.addObserver(this);
+        update(null, null);
     }
 
-    public GraphModel getGraphModel() {
-        return graphModel;
+    public Model getModel() {
+        return model;
     }
 
-    public void setGraphModel(GraphModel graphModel) {
-        this.graphModel = graphModel;
+    public void newLayout() {
+        layout = new LayoutManager(model.getGraphModel(), HEIGHT);
     }
 
     public ScrollPane getPane() {
@@ -58,22 +61,21 @@ public class BranchGraph {
     }
 
     private void addCompoenets() {
-        canvas.getChildren().addAll(graphModel.getNodeList());
-        canvas.getChildren().addAll(graphModel.getCommitEdgeList());
-        canvas.getChildren().addAll(graphModel.getMergeEdgeList());
-        for (CommitNode node : graphModel.getNodeList()) {
+        canvas.getChildren().addAll(model.getGraphModel().getNodeList());
+        canvas.getChildren().addAll(model.getGraphModel().getCommitEdgeList());
+        canvas.getChildren().addAll(model.getGraphModel().getMergeEdgeList());
+        for (CommitNode node : model.getGraphModel().getNodeList()) {
             node.toFront();
         }
     }
 
-    private void setUp() {
-        graphModel.populateCommitList();
-        graphModel.populateMergeList();
+    @Override
+    public void update(Observable o, Object arg) {
+        canvas = new Group();
+        newLayout();
         addCompoenets();
-
-        pane = new ScrollPane(canvas);
-                pane.setPrefSize(HEIGHT, WIDTH);
-        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
+        pane.setContent(canvas);
+        newLayout();
     }
 
 }
