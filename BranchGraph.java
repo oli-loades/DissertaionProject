@@ -17,7 +17,7 @@ import javafx.scene.control.ScrollPane;
 public class BranchGraph implements Observer {
 
     private Model model;
-    private ScrollPane pane;
+    private ZoomableScrollPane pane;
     private Group canvas;
     private final double HEIGHT;
     private final double WIDTH;
@@ -26,9 +26,7 @@ public class BranchGraph implements Observer {
         this.model = model;
         HEIGHT = h;
         WIDTH = w;
-        pane = new ScrollPane();
-        pane.setPrefSize(HEIGHT, WIDTH);
-        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
+      
 
         this.model.addObserver(this);
         update(null, null);
@@ -46,7 +44,7 @@ public class BranchGraph implements Observer {
         return pane;
     }
 
-    public void setPane(ScrollPane pane) {
+    public void setPane(ZoomableScrollPane pane) {
         this.pane = pane;
     }
 
@@ -72,8 +70,15 @@ public class BranchGraph implements Observer {
         canvas = new Group();
         newLayout();
         addCompoenets();
-        pane.setContent(canvas);
+        setUpPane();
+        //pane.setCanvas(canvas);
         newLayout();
+    }
+
+    private void setUpPane() {
+         pane = new ZoomableScrollPane(canvas);
+        pane.setPrefSize(HEIGHT, WIDTH);
+        pane.getStylesheets().add(BranchGraph.class.getResource("ScrollPaneStyle.css").toExternalForm());
     }
 
 }

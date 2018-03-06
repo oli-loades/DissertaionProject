@@ -5,6 +5,7 @@
  */
 package project;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,18 @@ public class Model extends Observable {
         branches = new ArrayList<>();
     }
 
-    public void newRepo(String url) {
+    public boolean newRepo(URL url) {
         gitHandler = new GitHandler(url);
+        Boolean empty = gitHandler.isEmpty();//if is empty throw error;
+        if(!empty){
         branches = gitHandler.createBranchStatList();
+        
         graphModel = new GraphModel(this);
+        }
+        
         setChanged();
         notifyObservers();
+        return empty;
     }
 
     public BranchStat getBranch(int index) {

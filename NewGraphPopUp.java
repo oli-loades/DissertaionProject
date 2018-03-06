@@ -5,6 +5,10 @@
  */
 package project;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -30,7 +34,7 @@ public class NewGraphPopUp extends GridPane {
     private TextField URLField;
     private Controller controller;
 
-    public NewGraphPopUp(Controller controller) {
+    public NewGraphPopUp(Controller controller)  {
         this.controller = controller;
         OKButton = new Button("OK");
 
@@ -42,7 +46,16 @@ public class NewGraphPopUp extends GridPane {
         setUp();
 
         OKButton.setOnAction((ActionEvent event) -> {
-            this.controller.createNewRepo(URLField.getText());
+
+            URL url;
+            try {
+                url = new URL(URLField.getText());
+                this.controller.createNewRepo(url);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(NewGraphPopUp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            
         });
 
         CancelButton.setOnAction((ActionEvent event) -> {
@@ -58,12 +71,12 @@ public class NewGraphPopUp extends GridPane {
         add(URLField, 1, 0);
         add(OKButton, 0, 1);
         add(CancelButton, 1, 1);
-        
+
         GridPane.setHalignment(OKButton, HPos.CENTER);
         GridPane.setValignment(OKButton, VPos.CENTER);
-        GridPane.setHalignment(CancelButton, HPos.CENTER); 
+        GridPane.setHalignment(CancelButton, HPos.CENTER);
         GridPane.setValignment(CancelButton, VPos.CENTER);
-        
+
         this.setAlignment(Pos.CENTER);
     }
 

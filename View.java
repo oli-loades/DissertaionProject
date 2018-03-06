@@ -11,6 +11,8 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -48,7 +50,7 @@ public class View extends Application implements Observer {
 
         model.addObserver(this);
 
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Branch Graph");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -103,8 +105,16 @@ public class View extends Application implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        graph = new BranchGraph(model, 500, 500);
-        root.setCenter(graph.getPane());
+     //   graph = new BranchGraph(model, 500, 500);
+        // root.setCenter(graph.getPane());
+    }
+
+    void emptyRepoAlert() {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Repository is empty");
+        alert.showAndWait();
     }
 
 }

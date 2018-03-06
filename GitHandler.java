@@ -8,6 +8,7 @@ package project;
 import org.eclipse.jgit.api.Git;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.DepthWalk.RevWalk;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.internal.storage.file.WindowCache;
+import org.eclipse.jgit.storage.file.WindowCacheConfig;
 
 /**
  *
@@ -31,15 +35,35 @@ public class GitHandler {
 
     private Git git;
 
-    public GitHandler(String URL) {
+    public GitHandler(URL url) {
         try {
-            git = cloneRepo(URL);
+
+            git = cloneRepo(url);
+            git.getRepository().close();
+            git.close();
         } catch (IOException | GitAPIException ex) {
             System.out.println("error: " + ex);
         }
     }
 
+    public void forceClose() {
+
+        git.getRepository().close();
+        git.close();
+        git.gc();
+        git = null;
+    }
+
     private void cleanDir(File dir) {
+        //       File f = new File(fileName);
+//        try {
+//            FileUtils.cleanDirectory(f); //clean out directory (this is optional -- but good know)
+//            FileUtils.forceDelete(f); //delete directory
+//            FileUtils.forceMkdir(f); //create directory
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return f;
         for (File file : dir.listFiles()) {
             if (file.isDirectory()) {
                 cleanDir(file);
@@ -48,7 +72,7 @@ public class GitHandler {
         }
     }
 
-    private Git cloneRepo(String URL) throws GitAPIException, IOException {
+    private Git cloneRepo(URL url) throws GitAPIException, IOException {
         String directory = System.getProperty("user.dir");
         directory = directory + "\\temp";
 
@@ -56,15 +80,24 @@ public class GitHandler {
 
         cleanDir(localPath);
 
-        try (Git tempGit = Git.cloneRepository().setURI(URL).setDirectory(localPath).setCloneAllBranches(true)
+        try (Git tempGit = Git.cloneRepository().setURI(url.toString()).setDirectory(localPath).setCloneAllBranches(true)
                 .call()) {
+            tempGit.getRepository().close();
+            tempGit.close();
             return tempGit;
         }
     }
+    
+    public boolean isEmpty(){
+        boolean empty = git.getRepository().isBare();
+        git.getRepository().close();
+        git.close();
+        return empty;
+    }
 
-    private String split(String branchName) {
-        String nameSplit[] = branchName.split("/");
-        return nameSplit[nameSplit.length - 1];
+    private String getName(String name, String seperator, int num) {
+        String nameSplit[] = name.split(seperator);
+        return nameSplit[nameSplit.length - num];
     }
 
     public List<BranchStat> createBranchStatList() {
@@ -72,81 +105,100 @@ public class GitHandler {
         try {
             for (Ref branch : git.branchList().setListMode(ListMode.ALL).call()) {
                 if (!branch.getName().equals("refs/remotes/origin/master")) {
-                    String name = split(branch.getName());
+                    String name = getName(branch.getName(), "/", 1);
                     BranchStat newBranch = new BranchStat(name, branch.getName());
-                    newBranch = createCommitList(newBranch);
+                      newBranch = createCommitList(newBranch);
                     newBranch = createMergeList(newBranch);
                     branches.add(newBranch);
                 }
             }
-        } catch (IOException | GitAPIException e) {
+        } catch (GitAPIException e) {
             e.printStackTrace();
         }
-        return branches;
+        git.getRepository().close();
+        git.close();
+       // return null;
+         return branches;
     }
 
-    private String findLatestCommit(String branchPath) throws IOException, GitAPIException {
-        Repository repository = git.getRepository();
+    private String findLatestCommit(String branchPath) {
         List<RevCommit> commits = new ArrayList<>();
-        try {
-            for (RevCommit commit : git.log().add(repository.resolve(branchPath)).call()) {
-                commits.add(commit);
+        try (Repository repository = git.getRepository()) {
+            //   ObjectId id = repository.resolve("d4cf0d622116f218d9df7276e54335e6a674da75") ;
+            ObjectId id = repository.resolve(branchPath);//
+            Iterable<RevCommit> logs = git.log().add(id).call();//issue is here
+            for (RevCommit commit : logs) {
+               commits.add(commit);          
             }
+            git.getRepository().close();
+            git.close();
+            
+            
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
         }
-        return commits.get(0).getName();
-    }
+
+          return commits.get(0).getName();
+      //  return "d4cf0d622116f218d9df7276e54335e6a674da75";
+    }// 
 
     public void printMerges() throws GitAPIException, IOException {
-        Repository repository = git.getRepository();
-        for (Ref branch : git.branchList().setListMode(ListMode.ALL).call()) {
-            System.out.println(branch.getName());
-            for (RevCommit commit : git.log().add(repository.resolve(branch.getName())).setRevFilter(RevFilter.ONLY_MERGES).call()) {
-                System.out.println(commit.getName());
-                System.out.println(commit.getAuthorIdent().getWhen());
+        try (Repository repository = git.getRepository()) {
+            for (Ref branch : git.branchList().setListMode(ListMode.ALL).call()) {
+                System.out.println(branch.getName());
+                for (RevCommit commit : git.log().add(repository.resolve(branch.getName())).setRevFilter(RevFilter.ONLY_MERGES).call()) {
+                    System.out.println(commit.getName());
+                    System.out.println(commit.getAuthorIdent().getWhen());
+                }
+                System.out.println("");
             }
-            System.out.println("");
         }
+        git.getRepository().close();
+        git.close();
     }
 
     public void printAllCommits() throws GitAPIException, IOException {
-        Repository repository = git.getRepository();
-        for (Ref branch : git.branchList().setListMode(ListMode.ALL).call()) {
-            System.out.println(branch.getName());
-            for (RevCommit commit : git.log().not(repository.resolve("master")).add(repository.resolve(branch.getName())).call()) {
-                System.out.println(commit.getName());
+        try (Repository repository = git.getRepository()) {
+            for (Ref branch : git.branchList().setListMode(ListMode.ALL).call()) {
+                System.out.println(branch.getName());
+                for (RevCommit commit : git.log().not(repository.resolve("master")).add(repository.resolve(branch.getName())).call()) {
+                    System.out.println(commit.getName());
+                }
+                System.out.println("");
             }
-            System.out.println("");
         }
+        git.getRepository().close();
+        git.close();
     }
 
-    private BranchStat createMergeList(BranchStat branch) throws GitAPIException, IOException {
-        try {
-            Repository repository = git.getRepository();
-            ObjectId id = repository.resolve(findLatestCommit(branch.getPathName()));
+    private BranchStat createMergeList(BranchStat branch) {
+        try (Repository repository = git.getRepository()) {
             RevWalk revWalk = new RevWalk(repository, 0);
-            RevCommit head = revWalk.parseCommit(id);
-            RevCommit current = head;
-            while (current.getParentCount() != 0) {
-                if (current.getParentCount() >= 2) {
-                    MergeStat newMerge = new MergeStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
-                    for (int i = 1; i < current.getParentCount(); i++) {
-                        newMerge.addSource(current.getParent(i).getName());
+            ObjectId id = repository.resolve(findLatestCommit(branch.getPathName()));//issue here
+           //  ObjectId id = repository.resolve("d4cf0d622116f218d9df7276e54335e6a674da75");
+            RevCommit current = revWalk.parseCommit(id); //issue here
+                while (current.getParentCount() != 0) {
+                    if (current.getParentCount() >= 2) {
+                        MergeStat newMerge = new MergeStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
+                        for (int i = 1; i < current.getParentCount(); i++) {
+                            newMerge.addSource(current.getParent(i).getName());
+                        }
+                        branch.addMerge(newMerge);
                     }
-                    branch.addMerge(newMerge);
+                    current = revWalk.parseCommit(current.getParent(0).getId());
                 }
-                current = revWalk.parseCommit(current.getParent(0).getId());
-            }
-        } catch (IOException | GitAPIException e) {
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return branch;
-    }
 
-    private BranchStat createCommitList(BranchStat branch) throws GitAPIException, IOException {
-        try {
-            Repository repository = git.getRepository();
+        //}
+        return branch;
+    }// | GitAPIException
+
+    private BranchStat createCommitList(BranchStat branch) {
+        try (Repository repository = git.getRepository()) {
+
             ObjectId id = repository.resolve(findLatestCommit(branch.getPathName()));
             RevWalk revWalk = new RevWalk(repository, 0);
             RevCommit head = revWalk.parseCommit(id);
@@ -170,13 +222,16 @@ public class GitHandler {
                 newCommit = new CommitStat(head.getName(), convertDate(head.getAuthorIdent().getWhen()));
                 commits.add(newCommit);
             }
-
+            revWalk.close();
             branch.setCommitList(commits);
-        } catch (IOException | GitAPIException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        git.getRepository().close();
+        git.close();
         return branch;
-    }
+    }// | GitAPIException
 
     private LocalDate convertDate(Date commitDate) {
         return commitDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

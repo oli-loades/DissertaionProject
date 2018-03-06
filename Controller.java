@@ -5,6 +5,8 @@
  */
 package project;
 
+import java.net.URL;
+
 /**
  *
  * @author Oli Loades
@@ -18,10 +20,13 @@ public class Controller {
         model = m;
     }
     
-    public void createNewRepo(String url){
-        model.newRepo(url);
+    public void createNewRepo(URL url){
+        boolean empty = model.newRepo(url);
+        if(!empty){
         view.enableButtons();
         close();
+        }
+        view.emptyRepoAlert();
     }
     
     public void close(){
