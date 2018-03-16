@@ -5,6 +5,7 @@
  */
 package project;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -25,19 +26,24 @@ public class Controller {
         if(!empty){
         view.enableButtons();
         close();
-        }
+        }else{
         view.emptyRepoAlert();
+        }
     }
     
     public void close(){
         view.closePopUp();
     }
 
-    void createNewRepoPopUp() {
+    public void createNewRepoPopUp() {
        view.createNewRepoPopUp();
     }
 
-    void createKeyPopUp() {
+    public void createKeyPopUp() {
        view.createKeyPopUp();
+    }
+    
+    public void URLError(MalformedURLException ex){
+        view.URLErrorAlert(ex);
     }
 }

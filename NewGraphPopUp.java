@@ -7,8 +7,6 @@ package project;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -52,7 +50,7 @@ public class NewGraphPopUp extends GridPane {
                 url = new URL(URLField.getText());
                 this.controller.createNewRepo(url);
             } catch (MalformedURLException ex) {
-                Logger.getLogger(NewGraphPopUp.class.getName()).log(Level.SEVERE, null, ex);
+                this.controller.URLError(ex);
             }
 
             

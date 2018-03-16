@@ -5,6 +5,7 @@
  */
 package project;
 
+import java.net.MalformedURLException;
 import java.util.Observable;
 import java.util.Observer;
 import javafx.application.Application;
@@ -74,11 +75,12 @@ public class View extends Application implements Observer {
     }
 
     private void disableButtons() {
-        keyButton.setDisable(true);
+        keyButton.setDisable(true);      
     }
 
     public void enableButtons() {
         keyButton.setDisable(false);
+        newGraphButrton.setDisable(true);
     }
 
     public void createNewRepoPopUp() {
@@ -93,7 +95,7 @@ public class View extends Application implements Observer {
     public void createKeyPopUp() {
         KeyPopUp popUp = new KeyPopUp(model, controller);
         popUpStage = new Stage();
-        Scene secondaryScene = new Scene(popUp, popUp.getWidth(), popUp.getHeight());
+        Scene secondaryScene = new Scene(popUp, 250,250);
         popUpStage.setScene(secondaryScene);
         popUpStage.setResizable(false);
         popUpStage.show();
@@ -105,8 +107,8 @@ public class View extends Application implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-     //   graph = new BranchGraph(model, 500, 500);
-        // root.setCenter(graph.getPane());
+        graph = new BranchGraph(model, 500, 500);
+         root.setCenter(graph.getPane());
     }
 
     void emptyRepoAlert() {
@@ -114,6 +116,14 @@ public class View extends Application implements Observer {
         alert.setTitle("Error Dialog");
         alert.setHeaderText(null);
         alert.setContentText("Repository is empty");
+        alert.showAndWait();
+    }
+    
+    public void URLErrorAlert(MalformedURLException ex){
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(ex.getMessage());
         alert.showAndWait();
     }
 
