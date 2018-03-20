@@ -65,7 +65,7 @@ public class GitHandler {
 
         File localPath = new File(directory);
 
-        cleanDir(localPath);
+        cleanDir(localPath);//fdletes existing git
 
         try (Git tempGit = Git.cloneRepository().setURI(url.toString()).setDirectory(localPath).setCloneAllBranches(true)
                 .call()) {
@@ -109,9 +109,8 @@ public class GitHandler {
 
     private String findLatestCommit(String branchPath) throws GitAPIException, IOException {
         List<RevCommit> commits = new ArrayList<>();
-        System.out.println(branchPath);
         try (Repository repository = git.getRepository()) {
-            ObjectId id = repository.resolve(branchPath);//
+            ObjectId id = repository.resolve(branchPath);
             for (RevCommit commit : git.log().add(id).call()) {
                 commits.add(commit);
             }
@@ -120,7 +119,7 @@ public class GitHandler {
             git.close();
 
         }
-        return commits.get(0).getName();
+        return commits.get(0).getName();//first commit
     }// 
 
     private BranchStat createMergeList(BranchStat branch) {
@@ -128,11 +127,11 @@ public class GitHandler {
             RevWalk revWalk = new RevWalk(repository, 0);
             ObjectId id = repository.resolve(findLatestCommit(branch.getPathName()));//issue here
             RevCommit current = revWalk.parseCommit(id); //issue here
-            while (current.getParentCount() != 0) {
-                if (current.getParentCount() >= 2) {
+            while (current.getParentCount() != 0) {//is not first commit
+                if (current.getParentCount() >= 2) {//is merge
                     MergeStat newMerge = new MergeStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
                     for (int i = 1; i < current.getParentCount(); i++) {
-                        newMerge.addSource(current.getParent(i).getName());
+                        newMerge.addSource(current.getParent(i).getName());//adds each parent
                     }
                     branch.addMerge(newMerge);
                 }
@@ -154,14 +153,13 @@ public class GitHandler {
 
             try (RevWalk revWalk = new RevWalk(repository, 0)) {
                 List<CommitStat> commits = new ArrayList<>();
-                RevCommit head = revWalk.parseCommit(id);
-
+                RevCommit head = revWalk.parseCommit(id);//first commit
                 RevCommit current = head;
                 CommitStat newCommit;
-                while (current.getParentCount() != 0) {
+                while (current.getParentCount() != 0) {//has parent
                     newCommit = new CommitStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));
                     commits.add(newCommit);
-                    current = revWalk.parseCommit(current.getParent(0).getId());
+                    current = revWalk.parseCommit(current.getParent(0).getId());//gets first parewnts
                 }
                 if (current.getParentCount() == 0 && !commits.isEmpty()) {//root commit
                     newCommit = new CommitStat(current.getName(), convertDate(current.getAuthorIdent().getWhen()));

@@ -44,7 +44,7 @@ public class LayoutManager {
 
     private void moveNodes() {
         double x;
-        double y = SIZE / 2;
+        double y = SIZE / 2;//middle
         double aboveY = y;
         double belowY = y;
         boolean aboveMaster = false;
@@ -62,7 +62,7 @@ public class LayoutManager {
                     belowY = belowY - HGAP;
                     y = belowY;
                 }
-                aboveMaster = !aboveMaster;
+                aboveMaster = !aboveMaster;//invert bool
                 currentBranch = node.getBranch();
             } else {
                 branchChange = false;
@@ -77,12 +77,12 @@ public class LayoutManager {
         Layer prevLayer = null;
         double start = 0;
         int numNodes;
-        for (LocalDate date : sortNodeList()) {
+        for (LocalDate date : sortNodeList()) {//each date used
 
             if (!containsLayer(date)) {
                 if (prevLayer != null) {
                     Duration duration = Duration.between(prevLayer.getDate().atStartOfDay(), date.atStartOfDay());
-                    long x = Math.abs(duration.toDays());
+                    long x = Math.abs(duration.toDays());//days between
                     start = prevLayer.getEndX() + (NODE_WIDTH * x);
                 }
 

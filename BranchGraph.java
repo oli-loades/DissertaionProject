@@ -57,21 +57,20 @@ public class BranchGraph implements Observer {
     }
 
     private void addCompoenets() {
+        //add components to group
         canvas.getChildren().addAll(model.getGraphModel().getNodeList());
         canvas.getChildren().addAll(model.getGraphModel().getCommitEdgeList());
         canvas.getChildren().addAll(model.getGraphModel().getMergeEdgeList());
         for (CommitNode node : model.getGraphModel().getNodeList()) {
-            node.toFront();
+            node.toFront();//so edges do not overlap nodes
         }
     }
 
     @Override
     public void update(Observable o, Object arg) {
         canvas = new Group();
-        newLayout();
         addCompoenets();
         setUpPane();
-        //pane.setCanvas(canvas);
         newLayout();
     }
 

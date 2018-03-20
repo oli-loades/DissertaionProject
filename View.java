@@ -64,6 +64,7 @@ public class View extends Application implements Observer {
     }
 
     private HBox setTopLayout() {
+        //creates buttos layout
         HBox topButtons = new HBox();
 
         topButtons.setSpacing(100);
@@ -79,6 +80,7 @@ public class View extends Application implements Observer {
     }
 
     public void enableButtons() {
+        //used when visualisation is made
         keyButton.setDisable(false);
         newGraphButrton.setDisable(true);
     }

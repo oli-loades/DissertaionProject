@@ -27,7 +27,7 @@ public class Model extends Observable {
 
     public boolean newRepo(URL url) {
         gitHandler = new GitHandler(url);
-        Boolean empty = gitHandler.isEmpty();//if is empty throw error;
+        Boolean empty = gitHandler.isEmpty();
         if(!empty){
         branches = gitHandler.createBranchStatList();
         

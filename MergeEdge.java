@@ -15,15 +15,15 @@ public class MergeEdge extends Edge {
 
     public MergeEdge(CommitNode source, CommitNode target) {
         super(source, target);
-        getStrokeDashArray().addAll(5.0, 10.0);
+        getStrokeDashArray().addAll(5.0, 10.0);//dotted line
     }
 
     @Override
     public void setColour() {
         setStroke(getSource().getFill());
     }
-    
-@Override
+
+    @Override
     public void addTooltip() {
         Tooltip tooltip = new Tooltip();
         tooltip.setText(getSource().getBranch());
